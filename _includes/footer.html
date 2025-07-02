@@ -1,0 +1,42 @@
+{% include calculate_relative_base.html %}
+{% include escape-404.html %}
+
+<footer class="main-footer">
+    <div class="footer-wrapper">
+        <div class="logo-symbol">
+            <a class="logo-link" title="{{ site.title }}" href="{{ relativebase }}">
+            <svg width="45px" height="45px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="logo-symbol" preserveAspectRatio="xMidYMid meet">
+            <!-- 圆形边框 -->
+            <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2.5" />
+
+            <!-- 手绘 L -->
+            <path d="M35 25 L35 60 L55 60" stroke="currentColor" stroke-width="3" fill="none" />
+
+            <!-- 手绘 D（半圆替换为三角形） -->
+            <path d="M55 35 L55 75 L75 55 Z" stroke="currentColor" stroke-width="3" fill="none" />
+            </svg>
+            
+            </a>
+        </div>
+        <div class="copyright">
+          <p>{{site.time | date: '%Y'}} &copy; {{site.author}}</p>
+        </div>
+        <div class="footer-nav">
+            <div>
+                <a href="{{ relativebase }}archive.html">
+                    公众号
+                </a>
+            </div>
+            <div>
+                <a href="{{ relativebase }}tags.html">
+                    文章合集
+                </a>
+            </div>
+            <div>
+                <a href="{{ relativebase }}about.html">
+                    关于动量
+                </a>
+            </div>
+        </div>
+    </div>
+</footer> <!-- End Footer -->
