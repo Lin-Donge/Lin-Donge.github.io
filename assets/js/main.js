@@ -1,30 +1,6 @@
 $(function () {
   'use strict';
 
-  // WeChat QR Code Modal
-  var qrModal = $('<div>').addClass('wechat-qr-modal').hide()
-    .append($('<div>').addClass('wechat-qr-container')
-      .append($('<div>').addClass('wechat-qr-close').text('×'))
-      .append($('<div>').addClass('wechat-qr-title').text('微信扫码分享'))
-      .append($('<div>').addClass('wechat-qr-code')
-        .append($('<img>').attr('src', '/assets/img/icons/qrcode.png').attr('alt', '微信二维码'))
-      )
-    );
-  $('body').append(qrModal);
-
-  // Close QR modal when clicking outside or on close button
-  qrModal.click(function(e) {
-    if ($(e.target).hasClass('wechat-qr-modal') || $(e.target).hasClass('wechat-qr-close')) {
-      qrModal.hide();
-    }
-  });
-
-  // Show WeChat QR code
-  window.showWechatQR = function() {
-    qrModal.show();
-  };
-
-
   /* -------- Scroll to top button ------- */
   $(".top").click(function() {
     $("html, body")
