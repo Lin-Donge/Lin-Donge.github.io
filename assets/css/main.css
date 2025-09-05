@@ -1928,7 +1928,10 @@ a.read-more:hover {
 .toc,
 .sidebar,
 .pnf-image,
-.page_meta {
+.page_meta,
+.fadeInDown {
+  -webkit-animation-delay: 0.75s;
+          animation-delay: 0.75s;
   -webkit-animation-duration: 0.7s;
           animation-duration: 0.7s;
   -webkit-animation-fill-mode: both;
