@@ -1887,6 +1887,24 @@ a.post-list-title {
     font-family: var(--font2);
     font-weight: var(--font2-bold);
     font-size: 2em;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+a.post-list-title:hover {
+    color: var(--accent);
+    transform: scale(1.05);
+}
+
+.list-group a {
+    text-decoration: none;
+    font-family: var(--font2);
+    font-weight: var(--font2-bold);
+    font-size: 2em;
+    transition: color 0.3s ease;
+}
+
+.list-group a:hover {
+    color: var(--accent);
 }
 a.read-more {
     color: var(--accent);
