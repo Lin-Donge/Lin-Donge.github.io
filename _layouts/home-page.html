@@ -4,9 +4,11 @@ layout: default
 <div class="flex-container transparent">
   {% include header.html %}
   <div class="content wrapper">
-    <div class="center-tags">
-      <p>欢迎访问我的个人网站，这里分享我的学习和生活点滴。</p>
-    </div>
+  {{ content }}
+  {% include search.html %}
+  <div class="center-tags" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+      <img src="{{ baseurl }}/assets/img/sentence1.png" alt="{{ site.title }}" class="logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+  </div>
   </div> <!-- End Wrapper -->
   {% include footer.html %}
 </div><!-- End flex-container -->

@@ -7,13 +7,48 @@ infinite: yes
 {% include calculate_relative_base.html %}
 
 <div class="archive tag-master">
+	<div class="data-display" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+    <div class="data-item" style="flex: 1; text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+        <h3 style="font-size: 30px;">公众号原创文章数</h3>
+        <p style="font-size: 24px;">52</p>
+    </div>
+    <div class="data-item" style="flex: 1; text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px; margin: 0 10px;">
+        <h3 style="font-size: 30px;">Markdown文章数</h3>
+        <p style="font-size: 24px;">10</p>
+    </div>
+</div>
+
+<div class="data-item" style="flex: 1; text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+    <img src="assets/img/code.jpg" style="width: 200px; height: 200px; margin-right: 100px;" alt="Code">
+    <div>
+        <h3 style="font-size: 30px;">小站成立时间</h3>
+        <p id="runtime" style="font-size: 24px;"></p>
+    </div>
+</div>
+	<script>
+		function calculateRuntime() {
+			const startDate = new Date('2023-10-08T15:21:00');
+			const currentDate = new Date();
+			const diffTime = Math.abs(currentDate - startDate);
+			const diffSeconds = Math.floor(diffTime / 1000);
+			const seconds = diffSeconds % 60;
+			const diffMinutes = Math.floor(diffSeconds / 60);
+			const minutes = diffMinutes % 60;
+			const diffHours = Math.floor(diffMinutes / 60);
+			const diffDays = Math.floor(diffHours / 24);
+			document.getElementById('runtime').textContent = `${diffDays}天${minutes}分钟${seconds}秒`;
+			}
+			calculateRuntime();
+			setInterval(calculateRuntime, 1000);
+	</script>
+	<h2>关于小站</h2>
+	<p>	动量小站是用于记录生活、收集整理信息、分享个人文章、应用有趣技术的一个平台。<br>
+		动量小站的定位：以公众号为基础，基于公众号而又高于公众号，逐步成为一个功能更加综合的个人平台。</p>
 	<form class="search-form inline">
 		<div id="search-container">
-			<input type="text" id="search-input" class="search" placeholder="Search">
+			<input type="text" id="search-input" class="search" placeholder="搜索…（功能正在调试，暂时无法使用）">
 		</div>
 	</form>
-
-
-	<ul id="results-container" class="results-search"></ul>
+	<ul id="results-container" class="results-search"></ul>	
 	
 </div>
