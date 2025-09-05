@@ -15,6 +15,25 @@ infinite: yes
 #runtime {
 		font-family: inherit;
 	}
+
+	@media (max-width: 768px) {
+		.data-display {
+			flex-direction: column;
+		}
+		.data-item {
+			margin-bottom: 10px;
+			margin-right: 0 !important;
+		}
+		.data-item img {
+			position: static !important;
+			margin: 0 auto;
+			display: block;
+		}
+		.data-item div {
+			margin-left: 0 !important;
+			text-align: center;
+		}
+	}
 </style>
 {% include calculate_relative_base.html %}
 
