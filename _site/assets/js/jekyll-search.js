@@ -1,5 +1,32 @@
 var relativebase = "./";
 
+// Function to parse markdown files and extract titles and links
+function parseMarkdownFiles() {
+  const files = ['markdowns/links.md', 'markdowns/wechat.md'];
+  const results = [];
+
+  files.forEach(file => {
+    fetch(file)
+      .then(response => response.text())
+      .then(text => {
+        const lines = text.split('\n');
+        lines.forEach(line => {
+          // 增强匹配模式：支持 [标题] | 描述 | URL 格式
+          const match = line.match(/\[([^\]]+)\]\s*\|\s*[^|]*\|\s*(https?:\/\/\S+)/);
+          if (match) {
+            results.push({ 
+              title: match[1].trim(), 
+              url: match[2].trim() 
+            });
+          }
+        });
+      })
+      .catch(error => console.error('Error reading file:', error));
+  });
+
+  return results;
+}
+
 (function e (t, n, r) { function s (o, u) { if (!n[o]) { if (!t[o]) { var a = typeof require === 'function' && require; if (!u && a) return a(o, !0); if (i) return i(o, !0); throw new Error("Cannot find module '" + o + "'") } var f = n[o] = {exports: {}}; t[o][0].call(f.exports, function (e) { var n = t[o][1][e]; return s(n || e) }, f, f.exports, e, t, n, r) } return n[o].exports } var i = typeof require === 'function' && require; for (var o = 0; o < r.length; o++)s(r[o]); return s })({1: [function (require, module, exports) {
   'use strict'
   module.exports = {
@@ -31,6 +58,208 @@ var relativebase = "./";
 }, {}],
   2: [function (require, module, exports) {
     'use strict'
+    
+    // Function to generate search results from parsed markdown data
+    function generateSearchResults(data) {
+      const resultsContainer = document.getElementById('results-container');
+      if (!resultsContainer) {
+        console.error('Search results container not found');
+        return;
+      }
+      
+      resultsContainer.innerHTML = '';
+      
+      data.forEach(item => {
+        const resultItem = document.createElement('li');
+        resultItem.className = 'search-result-item';
+        resultItem.innerHTML = `<a href="${item.url}" target="_blank">${item.title}</a>`;
+        resultsContainer.appendChild(resultItem);
+      });
+    }
+    
+    // Initialize search functionality after DOM is ready
+    function initSearch() {
+      const searchInput = document.getElementById('search-input');
+      const resultsContainer = document.getElementById('results-container');
+      
+      if (!searchInput || !resultsContainer) {
+        console.error('Required search elements not found');
+        return;
+      }
+      
+      // 预加载数据
+      let allItems = [];
+      parseMarkdownFiles().then(items => {
+        allItems = items;
+      });
+      
+      // 确保数据加载完成后再启用搜索
+    let searchReady = false;
+    
+    parseMarkdownFiles().then(items => {
+      allItems = items;
+      searchReady = true;
+    });
+    
+    // 使用防抖避免频繁搜索
+    let searchTimeout;
+    let lastQuery = '';
+    
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      
+      if (!searchReady) {
+        return;
+      }
+      
+      const query = searchInput.value.trim().toLowerCase();
+      if (query === lastQuery) return;
+      lastQuery = query;
+      
+      
+      
+      if (!query) {
+        generateSearchResults([]);
+        return;
+      }
+      
+      searchTimeout = setTimeout(() => {
+        const results = allItems.filter(item => {
+          const match = item.title.toLowerCase().includes(query);
+          
+          return match;
+        });
+        
+        
+        generateSearchResults(results);
+      }, 300); // 300ms防抖延迟
+    });
+    
+    // 统一结果渲染逻辑
+    function generateSearchResults(results) {
+      const resultsContainer = document.getElementById('results-container');
+      if (!resultsContainer) {
+        console.error('Results container not found');
+        return;
+      }
+      
+      resultsContainer.innerHTML = '';
+      
+      if (results.length === 0) {
+        resultsContainer.innerHTML = '<li class="no-results">没有找到匹配结果</li>';
+        return;
+      }
+      
+      results.forEach(result => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = result.url;
+        a.textContent = result.title;
+        a.target = '_blank';
+        li.appendChild(a);
+        resultsContainer.appendChild(li);
+      });
+    }
+    }
+    
+    // 修改 parseMarkdownFiles 返回 Promise
+    function parseMarkdownFiles() {
+      return new Promise((resolve) => {
+        const files = ['markdowns/links.md', 'markdowns/wechat.md'];
+        const results = [];
+        let filesProcessed = 0;
+
+        files.forEach(file => {
+          fetch(file)
+            .then(response => response.text())
+            .then(text => {
+              console.log(`Parsing file: ${file}`);
+              const lines = text.split('\n');
+              lines.forEach(line => {
+                const match = line.match(/\[([^\]]+)\]\s*\|\s*([^|]+)\s*\|\s*(https?:\/\/\S+)/);
+                if (match) {
+                  console.log('Extracted title:', match[2].trim()); // 调试输出
+                  results.push({ 
+                    title: match[2].trim(), // 使用第二个捕获组作为标题
+                    url: match[3].trim() 
+                  });
+                }
+              });
+              
+              filesProcessed++;
+              if (filesProcessed === files.length) {
+                resolve(results);
+              }
+            })
+            .catch(error => {
+              console.error('Error reading file:', error);
+              filesProcessed++;
+              if (filesProcessed === files.length) {
+                resolve(results);
+              }
+            });
+        });
+      });
+    }
+    
+    // Wait for both DOM and markdown data to be ready
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      initSearch();
+    });
+    
+    // 确保 results-container 存在
+    function ensureResultsContainer() {
+      const resultsContainer = document.getElementById('results-container');
+      if (!resultsContainer) {
+        const searchSection = document.querySelector('.search-section');
+        if (searchSection) {
+          const container = document.createElement('ul');
+          container.id = 'results-container';
+          container.className = 'search-results';
+          searchSection.appendChild(container);
+        }
+      }
+    }
+    
+    // 检查样式是否加载
+    function checkStyles() {
+      const style = document.querySelector('style[data-search-styles]');
+      if (!style) {
+        const css = `
+          .search-results {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+          }
+          .search-results li {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+          }
+          .search-results li a {
+            color: #333;
+            text-decoration: none;
+          }
+          .search-results li a:hover {
+            color: #0066cc;
+          }
+          .no-results {
+            color: #999;
+            font-style: italic;
+          }
+        `;
+        const styleTag = document.createElement('style');
+        styleTag.setAttribute('data-search-styles', '');
+        styleTag.innerHTML = css;
+        document.head.appendChild(styleTag);
+        
+      }
+    }
+    
+    // 初始化时检查容器和样式
+    ensureResultsContainer();
+    checkStyles();
+    
     module.exports = function OptionsValidator (params) {
       if (!validateParams(params)) {
         throw new Error('-- OptionsValidator: required options missing')
