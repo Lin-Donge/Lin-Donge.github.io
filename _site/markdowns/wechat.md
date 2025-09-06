@@ -1,6 +1,6 @@
 [公众号] | 动量小站一周年：在信息时代的洪流里，创造一点不同 | https://mp.weixin.qq.com/s/_WJkbARmm_hG3VObVGxnZA | 2024.10.08 年更系列
 [公众号] | 关于公众号分组发表的通知 | https://mp.weixin.qq.com/s/989HtN_Un9OInSFur1Tg8A | 2024.03.04
-[公众号] | 创建这个公众号，希望和大家一起，在信息洪流中一同停留五分钟 | https://mp.weixin.qq.com/s/KKvcKwBD0C97plFDDmHWiA | 2023.10.08公众号第一篇文章
+[公众号] | 创建这个公众号，希望和大家一起，在信息洪流中一同停留五分钟 | https://mp.weixin.qq.com/s/KKvcKwBD0C97plFDDmHWiA | 2023.10.08 公众号第一篇文章
 
 [20's summer] | 【1.1】跨越2000千米，再一次来到洱源 | https://mp.weixin.qq.com/s/L1xv5pkUW1jmmp4yhnMnKQ | 2025.06.21
 [20's summer] | 【1.2&4.0】看见、交流、记住所有的收获与感受 | https://mp.weixin.qq.com/s/0m6x1Qoe-qq05OQEefzI9g | 2025.07.17
@@ -15,10 +15,10 @@
 [个人分享] | 重构：我的2024年关键词 | https://mp.weixin.qq.com/s/2ggrWfm5d2aRQoHPh5cvUQ | 2024.12.31
 [个人分享] | 高中物理竞赛给我带来了什么 | https://mp.weixin.qq.com/s/7D7UBf9SHPyED7MRrSk43A | 2024.09.07 恰逢又一年物竞初赛
 [个人分享] | 从陈瑞球楼开始，聊聊我的三一经历 | https://mp.weixin.qq.com/s/d6uIGfpUkYCmAPYfJTjqjQ | 2024.06.18
-[个人分享] | 一起，共赴下一场4年之约 | https://mp.weixin.qq.com/s/RBDOlq74OWxcc1v3O_x0eA | 2024.02.29四年更文章
+[个人分享] | 一起，共赴下一场4年之约 | https://mp.weixin.qq.com/s/RBDOlq74OWxcc1v3O_x0eA | 2024.02.29 四年更文章
 [个人分享] | 我与机动 | https://mp.weixin.qq.com/s/1_jUkQd_jnjHlXEOqn9UpQ | 2024.02.25
-[个人分享] | 浙大，我曾经的梦校 | https://mp.weixin.qq.com/s/3SAdF7BR5hwgblCoGDuuvQ | 2024.01.16关于浙大
-[个人分享] | 上海初印象 | https://mp.weixin.qq.com/s/989HtN_Un9OInSFur1Tg8A | 2024.01.14公众号第二篇文章，第一篇公众号随笔
+[个人分享] | 浙大，我曾经的梦校 | https://mp.weixin.qq.com/s/3SAdF7BR5hwgblCoGDuuvQ | 2024.01.16 关于浙大
+[个人分享] | 上海初印象 | https://mp.weixin.qq.com/s/989HtN_Un9OInSFur1Tg8A | 2024.01.14 公众号第二篇文章，第一篇公众号随笔
 
 [话题分享] | 交大部分区域的噪音调查 | https://mp.weixin.qq.com/s/dxL1OmuTOFliXUUq625HUQ | 2025.01.28 通识课结课论文
 [话题分享] | 愿见海菜花开——洱源实践体会分享 | https://mp.weixin.qq.com/s/GPQDd8Xqpj-Vc5jjcguDfQ | 2024.08.06
@@ -42,7 +42,7 @@
 [时事评论] | 谈谈昨天的伤医事件 | https://mp.weixin.qq.com/s/-zNAMcLWRfPCdEHkFhR6cQ | 2024.7.20
 [时事评论] | 台湾当归——台海局势简要分析 | https://mp.weixin.qq.com/s/3h4EG_ULGdY3Jhk19kGrDA | 2024.05.27
 [时事评论] | 大学开放，决不是做公园和景点 | https://mp.weixin.qq.com/s/tZ9j_ayYOEmLYaCdN__YJw | 2024.03.25
-[时事评论] | 俄乌冲突两周年——僵局中的变数 | https://mp.weixin.qq.com/s/989HtN_Un9OInSFur1Tg8A | 2024.02.24年更文章
+[时事评论] | 俄乌冲突两周年——僵局中的变数 | https://mp.weixin.qq.com/s/989HtN_Un9OInSFur1Tg8A | 2024.02.24 年更文章
 
 [图片分享] | 澳门——历史与文化的融合 | https://mp.weixin.qq.com/s/HCoVKDNQZFJD_cLRzi-mrg | 2025.08.15
 [图片分享] | 洛桑——在日内瓦湖边行走 | https://mp.weixin.qq.com/s/LAzF_BAsBNtta7qdni_4-g | 2025.07.15
