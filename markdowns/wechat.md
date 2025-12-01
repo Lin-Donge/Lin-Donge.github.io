@@ -1,13 +1,16 @@
+[公众号] | 动量小站二周年：关于小站“升级”的简要介绍 | https://mp.weixin.qq.com/s/GWnSQ4md6dqFxfAwXcPzKA | 2025.10.08 年更系列
 [公众号] | 动量小站一周年：在信息时代的洪流里，创造一点不同 | https://mp.weixin.qq.com/s/_WJkbARmm_hG3VObVGxnZA | 2024.10.08 年更系列
 [公众号] | 关于公众号分组发表的通知 | https://mp.weixin.qq.com/s/989HtN_Un9OInSFur1Tg8A | 2024.03.04
 [公众号] | 创建这个公众号，希望和大家一起，在信息洪流中一同停留五分钟 | https://mp.weixin.qq.com/s/KKvcKwBD0C97plFDDmHWiA | 2023.10.08 公众号第一篇文章
 
-[20's summer] | 【1.1】跨越2000千米，再一次来到洱源 | https://mp.weixin.qq.com/s/L1xv5pkUW1jmmp4yhnMnKQ | 2025.06.21
-[20's summer] | 【1.2&4.0】看见、交流、记住所有的收获与感受 | https://mp.weixin.qq.com/s/0m6x1Qoe-qq05OQEefzI9g | 2025.07.17
-[20's summer] | 【1.3】湖南五凌电力社会实践总结 | https://mp.weixin.qq.com/s/qN4bziCe0mcVFnXKRCmqhw | 2025.08.14
-[20's summer] | 【4.1】1.2.在日内瓦，走进国际峰会 | https://mp.weixin.qq.com/s/hRhY1GVR56XYzXKfWErTrA | 2025.07.23
-[20's summer] | 【4.2】3.国际组织——全球治理受到挑战的时候，国际组织又走向何处？ | https://mp.weixin.qq.com/s/BOEWMGXSyNfKz-Yz0Az-mw | 2025.07.24
-[20's summer] | 【4.3】4.与更多人交流的过程中，听见比原先更多的不同 | https://mp.weixin.qq.com/s/aK_RSCHABvP4GE7q1LBI5w | 2025.07.25
+[我的20岁] | 【1.0】用三个月的时间，定义属于自己的“假期” | https://mp.weixin.qq.com/s/uKihs-TL6n8KBZWMyhStlA | 2025.10.26
+[我的20岁] | 【1.1】跨越2000千米，再一次来到洱源 | https://mp.weixin.qq.com/s/L1xv5pkUW1jmmp4yhnMnKQ | 2025.06.21
+[我的20岁] | 【1.2&4.0】看见、交流、记住所有的收获与感受 | https://mp.weixin.qq.com/s/0m6x1Qoe-qq05OQEefzI9g | 2025.07.17
+[我的20岁] | 【1.3】湖南五凌电力社会实践总结 | https://mp.weixin.qq.com/s/qN4bziCe0mcVFnXKRCmqhw | 2025.08.14
+[我的20岁] | 【3.1】在上海考驾照，体验究竟如何？ | https://mp.weixin.qq.com/s/X_lGlPb6y7z4VVBZNX-Rdg | 2025.09.21
+[我的20岁] | 【4.1】1.2.在日内瓦，走进国际峰会 | https://mp.weixin.qq.com/s/hRhY1GVR56XYzXKfWErTrA | 2025.07.23
+[我的20岁] | 【4.2】3.国际组织——全球治理受到挑战的时候，国际组织又走向何处？ | https://mp.weixin.qq.com/s/BOEWMGXSyNfKz-Yz0Az-mw | 2025.07.24
+[我的20岁] | 【4.3】4.与更多人交流的过程中，听见比原先更多的不同 | https://mp.weixin.qq.com/s/aK_RSCHABvP4GE7q1LBI5w | 2025.07.25
 
 [个人分享] | 随笔：“活着”、面试与个人的局限 | https://mp.weixin.qq.com/s/CFnL_dG8i04jDMnwGK3Z3w | 2025.03.24
 [个人分享] | 一点学期结束的小随笔 | https://mp.weixin.qq.com/s/49cbYROvcfsrlkl89ElWiw | 2025.01.28
