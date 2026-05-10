@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="folder" viewBox="0 0 24 24">
+    <path d="M3.5 7.5h6l1.8 2h9.2v8.8a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="book" viewBox="0 0 24 24">
+    <path d="M6 4.5h9.2A2.8 2.8 0 0 1 18 7.3v12.2H8.2A2.2 2.2 0 0 1 6 17.3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M8.5 17.2H18M9 8h5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="flask" viewBox="0 0 24 24">
+    <path d="M9 4.5h6M10 4.5v5.2l-4.6 7.8A1.7 1.7 0 0 0 6.9 20h10.2a1.7 1.7 0 0 0 1.5-2.5L14 9.7V4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M8.2 16h7.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="leaf" viewBox="0 0 24 24">
+    <path d="M5 18.5c8.8.4 13.4-4.2 14-13.5-8.3.4-13.5 5.1-14 13.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M5 19c3.2-4.7 6.7-7.6 11-9.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="compass" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <path d="m14.8 8.8-1.3 4.7-4.3 1.7 1.3-4.7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="target" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <circle cx="12" cy="12" r="1.1" fill="currentColor"/>
+  </symbol>
+  <symbol id="bulb" viewBox="0 0 24 24">
+    <path d="M8 11a4 4 0 1 1 8 0c0 1.7-.9 2.8-2 3.8-.5.5-.8 1.1-.8 1.8h-2.4c0-.7-.3-1.3-.8-1.8-1.1-1-2-2.1-2-3.8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M10 19h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="puzzle" viewBox="0 0 24 24">
+    <path d="M8 4h4v3a1.8 1.8 0 1 0 3.6 0V4H20v6h-3a1.8 1.8 0 1 0 0 3.6h3V20h-6v-3a1.8 1.8 0 1 0-3.6 0v3H4v-6h3a1.8 1.8 0 1 0 0-3.6H4V4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="archive" viewBox="0 0 24 24">
+    <path d="M4.5 6h15v4h-15ZM6.5 10v8.5h11V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M10 13h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="pencil" viewBox="0 0 24 24">
+    <path d="M5 18.5 6.2 14 15.4 4.8a2 2 0 0 1 2.8 2.8L9 16.8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="m14 6.2 3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  </symbol>
+  <symbol id="chart" viewBox="0 0 24 24">
+    <path d="M5 19V5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M8.5 15v-4M12 15V8M15.5 15v-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="bookmark" viewBox="0 0 24 24">
+    <path d="M7 5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V20l-5-3.2L7 20Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="tool" viewBox="0 0 24 24">
+    <path d="M14.5 5.4a4.6 4.6 0 0 0 4.1 6.6L11 19.6a2.2 2.2 0 0 1-3.1-3.1l7.6-7.6a4.7 4.7 0 0 0-1-3.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="paperclip" viewBox="0 0 24 24">
+    <path d="m8.2 12.6 5.9-5.9a3 3 0 0 1 4.2 4.2l-7.1 7.1a4.2 4.2 0 0 1-5.9-5.9l7.4-7.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="star" viewBox="0 0 24 24">
+    <path d="m12 4.5 2.1 4.4 4.8.7-3.5 3.4.8 4.8-4.2-2.3-4.2 2.3.8-4.8-3.5-3.4 4.8-.7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+</svg>
