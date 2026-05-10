@@ -11,3 +11,5 @@
 /.vscode/
 /.idea/
 .liquidrc
+workingplatform/data/*.local.js
+_site/workingplatform/data/*.local.js
