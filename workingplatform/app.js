@@ -2077,10 +2077,8 @@ function getDefaultBookmarks() {
 function normalizeBookmarks(bookmarks) {
   const counters = new Map();
   const normalized = (bookmarks ?? []).map((bookmark) => {
-    const category = bookmarkCategories.some((item) => item.id === bookmark.category)
-      ? bookmark.category
-      : inferBookmarkCategory(bookmark);
-    const type = ["web", "folder", "linkFolder"].includes(bookmark.type) ? bookmark.type : "web";
+    const type = normalizeBookmarkType(bookmark);
+    const category = normalizeBookmarkCategory(bookmark, bookmarks);
     const groupKey = `${category}:${type}:${type === "web" ? bookmark.folderId ?? "" : ""}`;
     const nextOrder = counters.get(groupKey) ?? 0;
     counters.set(groupKey, nextOrder + 1);
@@ -2098,6 +2096,21 @@ function normalizeBookmarks(bookmarks) {
     if (bookmark.folderId && !folderIds.has(bookmark.folderId)) bookmark.folderId = "";
   });
   return normalized;
+}
+
+function normalizeBookmarkType(bookmark) {
+  const value = String(bookmark?.type ?? "").trim();
+  if (["linkFolder", "webFolder", "bookmarkFolder", "link-folder", "web-folder"].includes(value)) return "linkFolder";
+  if (value === "folder" && !String(bookmark?.url ?? "").trim()) return "linkFolder";
+  if (value === "folder") return "folder";
+  return "web";
+}
+
+function normalizeBookmarkCategory(bookmark, bookmarks) {
+  if (bookmarkCategories.some((item) => item.id === bookmark.category)) return bookmark.category;
+  const child = (bookmarks ?? []).find((item) => item.folderId && item.folderId === bookmark.id && bookmarkCategories.some((category) => category.id === item.category));
+  if (child) return child.category;
+  return inferBookmarkCategory(bookmark);
 }
 
 function compareBookmarks(a, b) {
