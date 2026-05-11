@@ -1941,7 +1941,7 @@ function serializeCloudState() {
 
 function serializeStateData(source) {
   return {
-    bookmarks: source.bookmarks ?? [],
+    bookmarks: normalizeBookmarks(structuredClone(source.bookmarks ?? [])),
     spaces: source.spaces ?? [],
   };
 }
@@ -2076,22 +2076,28 @@ function getDefaultBookmarks() {
 
 function normalizeBookmarks(bookmarks) {
   const counters = new Map();
-  return (bookmarks ?? []).map((bookmark) => {
+  const normalized = (bookmarks ?? []).map((bookmark) => {
     const category = bookmarkCategories.some((item) => item.id === bookmark.category)
       ? bookmark.category
       : inferBookmarkCategory(bookmark);
-    const groupKey = `${category}:${bookmark.type}`;
+    const type = ["web", "folder", "linkFolder"].includes(bookmark.type) ? bookmark.type : "web";
+    const groupKey = `${category}:${type}:${type === "web" ? bookmark.folderId ?? "" : ""}`;
     const nextOrder = counters.get(groupKey) ?? 0;
     counters.set(groupKey, nextOrder + 1);
     return {
       ...bookmark,
       category,
-      type: ["web", "folder", "linkFolder"].includes(bookmark.type) ? bookmark.type : "web",
-      folderId: bookmark.type === "web" ? bookmark.folderId ?? "" : "",
-      url: bookmark.type === "linkFolder" ? "" : bookmark.url ?? "",
+      type,
+      folderId: type === "web" ? bookmark.folderId ?? "" : "",
+      url: type === "linkFolder" ? "" : bookmark.url ?? "",
       order: Number.isFinite(bookmark.order) ? bookmark.order : nextOrder,
     };
   });
+  const folderIds = new Set(normalized.filter((bookmark) => bookmark.type === "linkFolder").map((bookmark) => bookmark.id));
+  normalized.forEach((bookmark) => {
+    if (bookmark.folderId && !folderIds.has(bookmark.folderId)) bookmark.folderId = "";
+  });
+  return normalized;
 }
 
 function compareBookmarks(a, b) {
