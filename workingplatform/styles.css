@@ -811,6 +811,13 @@ button:active:not(:disabled) {
   align-content: start;
   gap: 8px;
   min-width: 0;
+  border-radius: 8px;
+}
+
+.bookmark-column.drag-over {
+  background: #f8f8f7;
+  outline: 1px dashed #c9c9c5;
+  outline-offset: 3px;
 }
 
 .bookmark-category h4,
@@ -872,6 +879,67 @@ button:active:not(:disabled) {
   min-height: 100%;
   color: inherit;
   text-decoration: none;
+}
+
+.bookmark-folder {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bookmark-folder.drag-over > .folder-heading,
+.bookmark-folder.drag-over {
+  border-color: #b9b8b3;
+  background: #f8f8f7;
+}
+
+.folder-heading {
+  padding-left: 6px;
+}
+
+.bookmark-folder-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1 1 auto;
+  min-height: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.bookmark-folder-toggle strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookmark-folder-toggle small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.folder-caret {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  transform: rotate(0deg);
+  transition: transform 140ms ease;
+}
+
+.bookmark-folder.expanded .folder-caret {
+  transform: rotate(90deg);
+}
+
+.bookmark-folder-items {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
 }
 
 .bookmark-link strong {

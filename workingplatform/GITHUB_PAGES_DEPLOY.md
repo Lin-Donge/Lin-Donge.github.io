@@ -9,12 +9,13 @@
 - `index.html`
 - `app.js`
 - `styles.css`
+- `data/projects.js`
 - `data/schedules.js`
 - `data/bookmarks.js`
 - `头像.jpg`
 - `.nojekyll`
 
-不要提交 `data/schedules.local.js`。这个文件只用于本地私有初始日程，已经被 `.gitignore` 忽略；公开访客默认会从空的 `data/schedules.js` 开始，并把后续修改保存在自己的浏览器 `localStorage` 里。
+不要提交 `data/schedules.local.js`。这个文件只用于本地私有初始日程，已经被 `.gitignore` 忽略；公开访客默认会从 `data/projects.js` 和 `data/schedules.js` 的示例项目/日程开始，并把后续修改保存在自己的浏览器 `localStorage` 里。
 
 本地启动脚本可以提交，也可以不提交：
 

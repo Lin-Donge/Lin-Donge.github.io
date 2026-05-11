@@ -76,7 +76,7 @@ const initialData = {
       name: "日常生活",
       icon: "leaf",
       bookmarks: [],
-      projects: [{ id: "p-life-trip", name: "前往更好的远方", icon: "compass" }],
+      projects: [],
       tasks: [],
     },
     {
@@ -84,14 +84,7 @@ const initialData = {
       name: "学生工作",
       icon: "person",
       bookmarks: [],
-      projects: [
-        { id: "p-student-chair-meeting", name: "院系主席会议", icon: "book" },
-        { id: "p-student-review", name: "评议", icon: "target" },
-        { id: "p-student-shooting", name: "拍摄", icon: "star" },
-        { id: "p-student-regular-meeting", name: "例会", icon: "folder" },
-        { id: "p-student-expected-meeting", name: "预计开会", icon: "bulb" },
-        { id: "p-student-model-power", name: "榜样的力量", icon: "star" },
-      ],
+      projects: [],
       tasks: [],
     },
     {
@@ -99,10 +92,7 @@ const initialData = {
       name: "学习科研",
       icon: "flask",
       bookmarks: [],
-      projects: [
-        { id: "p-research-signal-exam", name: "电子信号处理考试", icon: "flask" },
-        { id: "p-research-course-select", name: "选课", icon: "pencil" },
-      ],
+      projects: [],
       tasks: [],
     },
     {
@@ -127,6 +117,7 @@ let editingBookmarkId = null;
 let bookmarkEditMode = false;
 let dragStarted = false;
 let bookmarkDragStarted = false;
+const expandedBookmarkFolders = new Set();
 let shouldAnimateCalendarLoad = true;
 let confirmResolver = null;
 let supabaseClient = createSupabaseClient();
@@ -193,6 +184,7 @@ const els = {
   projectList: document.querySelector("#projectList"),
   taskDialog: document.querySelector("#taskDialog"),
   bookmarkDialog: document.querySelector("#bookmarkDialog"),
+  bookmarkUrlLabel: document.querySelector("#bookmarkUrlLabel"),
   projectDialog: document.querySelector("#projectDialog"),
   userDialog: document.querySelector("#userDialog"),
   confirmDialog: document.querySelector("#confirmDialog"),
@@ -231,6 +223,7 @@ document.querySelector("#newTaskBtn").addEventListener("click", () => {
 });
 
 document.querySelector("#addBookmarkBtn").addEventListener("click", openNewBookmarkDialog);
+els.bookmarkForm.elements.type.addEventListener("change", syncBookmarkFormType);
 els.editBookmarkBtn.addEventListener("click", () => {
   bookmarkEditMode = !bookmarkEditMode;
   renderBookmarks(state.activeSpaceId === BOOKMARKS_ID);
@@ -339,6 +332,13 @@ function syncDefaultEndTimeFromStart() {
 els.bookmarkForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
+  const type = form.get("type");
+  const url = type === "linkFolder" ? "" : form.get("url").trim();
+  if (type !== "linkFolder" && !url) {
+    showToast("请填写链接");
+    els.bookmarkForm.elements.url.focus();
+    return;
+  }
   const bookmark = editingBookmarkId
     ? state.bookmarks.find((item) => item.id === editingBookmarkId)
     : null;
@@ -347,9 +347,16 @@ els.bookmarkForm.addEventListener("submit", (event) => {
     const previousCategory = bookmark.category;
     const previousType = bookmark.type;
     bookmark.title = form.get("title").trim();
-    bookmark.type = form.get("type");
+    bookmark.type = type;
     bookmark.category = form.get("category");
-    bookmark.url = form.get("url").trim();
+    bookmark.url = url;
+    if (bookmark.type !== "web") bookmark.folderId = "";
+    if (previousType === "linkFolder" && bookmark.type !== "linkFolder") {
+      state.bookmarks.forEach((item) => {
+        if (item.folderId === bookmark.id) item.folderId = "";
+      });
+      expandedBookmarkFolders.delete(bookmark.id);
+    }
     if (bookmark.category !== previousCategory || bookmark.type !== previousType) {
       bookmark.order = getNextBookmarkOrder(bookmark.category, bookmark.type);
     }
@@ -357,10 +364,11 @@ els.bookmarkForm.addEventListener("submit", (event) => {
     state.bookmarks.push({
       id: crypto.randomUUID(),
       title: form.get("title").trim(),
-      type: form.get("type"),
+      type,
       category: form.get("category"),
-      url: form.get("url").trim(),
-      order: getNextBookmarkOrder(form.get("category"), form.get("type")),
+      url,
+      folderId: "",
+      order: getNextBookmarkOrder(form.get("category"), type),
     });
   }
   editingBookmarkId = null;
@@ -508,9 +516,9 @@ function renderBookmarks(isBookmarks) {
         <section class="bookmark-category">
           <h4>${category.name}</h4>
           <div class="bookmark-category-grid">
-            <section class="bookmark-column">
+            <section class="bookmark-column" data-web-column-category="${escapeAttr(category.id)}">
               <h5>网页链接</h5>
-              ${renderBookmarkColumn(bookmarks.filter((bookmark) => bookmark.type === "web"), "web")}
+              ${renderWebBookmarkColumn(bookmarks)}
             </section>
             <section class="bookmark-column">
               <h5>文件夹链接</h5>
@@ -524,6 +532,39 @@ function renderBookmarks(isBookmarks) {
   bindBookmarkActions();
 }
 
+function renderWebBookmarkColumn(bookmarks) {
+  const webBookmarks = bookmarks.filter((bookmark) => bookmark.type === "web");
+  const folders = bookmarks.filter((bookmark) => bookmark.type === "linkFolder");
+  const looseBookmarks = webBookmarks.filter((bookmark) => !bookmark.folderId || !folders.some((folder) => folder.id === bookmark.folderId));
+  if (!folders.length && !looseBookmarks.length) return `<div class="empty compact">暂无网页链接。</div>`;
+  return [
+    ...folders.slice().sort(compareBookmarks).map((folder) => renderBookmarkFolder(folder, webBookmarks.filter((bookmark) => bookmark.folderId === folder.id))),
+    looseBookmarks.length ? renderBookmarkColumn(looseBookmarks, "web") : "",
+  ].filter(Boolean).join("");
+}
+
+function renderBookmarkFolder(folder, children) {
+  const expanded = expandedBookmarkFolders.has(folder.id);
+  return `
+    <div class="bookmark-folder ${expanded ? "expanded" : ""}" data-bookmark-folder-id="${escapeAttr(folder.id)}" data-bookmark-category="${escapeAttr(folder.category)}">
+      <div class="bookmark folder-heading" draggable="true" data-bookmark-id="${escapeAttr(folder.id)}" data-bookmark-category="${escapeAttr(folder.category)}" data-bookmark-type="${escapeAttr(folder.type)}">
+        <button class="bookmark-folder-toggle" type="button" data-folder-toggle="${escapeAttr(folder.id)}" aria-expanded="${expanded}" title="${expanded ? "收起文件夹" : "展开文件夹"}">
+          <span class="folder-caret" aria-hidden="true">›</span>
+          ${bookmarkTypeIconSvg(folder.type)}
+          <strong>${escapeHtml(folder.title)}</strong>
+          <small>${children.length}</small>
+        </button>
+        <button class="bookmark-delete" type="button" data-bookmark-id="${escapeAttr(folder.id)}" title="编辑书签" aria-label="编辑 ${escapeAttr(folder.title)}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5l4.2-1 9.6-9.6a2.1 2.1 0 0 0-3-3l-9.6 9.6-1.2 4Z"/><path d="M13.8 7.4l2.8 2.8"/></svg>
+        </button>
+      </div>
+      <div class="bookmark-folder-items" ${expanded ? "" : "hidden"}>
+        ${children.length ? renderBookmarkColumn(children, "web") : `<div class="empty compact">拖入网页链接。</div>`}
+      </div>
+    </div>
+  `;
+}
+
 function renderBookmarkColumn(bookmarks, type) {
   if (!bookmarks.length) return `<div class="empty compact">暂无${type === "web" ? "网页链接" : "文件夹链接"}。</div>`;
   return bookmarks
@@ -531,7 +572,7 @@ function renderBookmarkColumn(bookmarks, type) {
     .sort(compareBookmarks)
     .map(
       (bookmark) => `
-        <div class="bookmark" draggable="true" data-bookmark-id="${escapeAttr(bookmark.id)}" data-bookmark-category="${escapeAttr(bookmark.category)}" data-bookmark-type="${escapeAttr(bookmark.type)}">
+        <div class="bookmark" draggable="true" data-bookmark-id="${escapeAttr(bookmark.id)}" data-bookmark-category="${escapeAttr(bookmark.category)}" data-bookmark-type="${escapeAttr(bookmark.type)}" data-parent-folder-id="${escapeAttr(bookmark.folderId ?? "")}">
           <a class="bookmark-link" href="${escapeAttr(formatBookmarkHref(bookmark))}" target="_blank" rel="noreferrer" data-bookmark-type="${escapeAttr(bookmark.type)}" data-bookmark-url="${escapeAttr(bookmark.url)}">
             ${bookmarkTypeIconSvg(bookmark.type)}
             <strong>${escapeHtml(bookmark.title)}</strong>
@@ -572,13 +613,54 @@ function bindBookmarkActions() {
     item.addEventListener("dragleave", () => item.classList.remove("drag-over"));
     item.addEventListener("drop", (event) => {
       event.preventDefault();
+      event.stopPropagation();
       item.classList.remove("drag-over");
       if (!canDropBookmark(draggedBookmark, item)) return;
-      reorderBookmarks(draggedBookmark.dataset.bookmarkId, item.dataset.bookmarkId);
+      handleBookmarkDrop(draggedBookmark.dataset.bookmarkId, item.dataset.bookmarkId);
+    });
+  });
+  els.bookmarkGrid.querySelectorAll("[data-bookmark-folder-id]").forEach((folder) => {
+    folder.addEventListener("dragover", (event) => {
+      if (!canDropIntoBookmarkFolder(draggedBookmark, folder)) return;
+      event.preventDefault();
+      folder.classList.add("drag-over");
+      event.dataTransfer.dropEffect = "move";
+    });
+    folder.addEventListener("dragleave", (event) => {
+      if (folder.contains(event.relatedTarget)) return;
+      folder.classList.remove("drag-over");
+    });
+    folder.addEventListener("drop", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      folder.classList.remove("drag-over");
+      if (!canDropIntoBookmarkFolder(draggedBookmark, folder)) return;
+      moveBookmarkIntoFolder(draggedBookmark.dataset.bookmarkId, folder.dataset.bookmarkFolderId);
+    });
+  });
+  els.bookmarkGrid.querySelectorAll("[data-web-column-category]").forEach((column) => {
+    column.addEventListener("dragover", (event) => {
+      if (!canDropOutOfBookmarkFolder(draggedBookmark, column)) return;
+      event.preventDefault();
+      column.classList.add("drag-over");
+      event.dataTransfer.dropEffect = "move";
+    });
+    column.addEventListener("dragleave", (event) => {
+      if (column.contains(event.relatedTarget)) return;
+      column.classList.remove("drag-over");
+    });
+    column.addEventListener("drop", (event) => {
+      event.preventDefault();
+      column.classList.remove("drag-over");
+      if (!canDropOutOfBookmarkFolder(draggedBookmark, column)) return;
+      moveBookmarkOutOfFolder(draggedBookmark.dataset.bookmarkId);
     });
   });
   els.bookmarkGrid.querySelectorAll(".bookmark-delete[data-bookmark-id]").forEach((button) => {
     button.addEventListener("click", () => openBookmarkEditor(button.dataset.bookmarkId));
+  });
+  els.bookmarkGrid.querySelectorAll("[data-folder-toggle]").forEach((button) => {
+    button.addEventListener("click", () => toggleBookmarkFolder(button.dataset.folderToggle));
   });
   els.bookmarkGrid.querySelectorAll(".bookmark-link").forEach((link) => {
     link.addEventListener("click", async (event) => {
@@ -605,6 +687,7 @@ function openNewBookmarkDialog() {
   els.bookmarkDialog.querySelector("h3").textContent = "添加书签";
   els.bookmarkForm.reset();
   els.deleteBookmarkBtn.hidden = true;
+  syncBookmarkFormType();
   els.bookmarkDialog.showModal();
 }
 
@@ -618,29 +701,99 @@ function openBookmarkEditor(bookmarkId) {
   els.bookmarkForm.elements.category.value = bookmark.category;
   els.bookmarkForm.elements.url.value = bookmark.url;
   els.deleteBookmarkBtn.hidden = false;
+  syncBookmarkFormType();
   els.bookmarkDialog.showModal();
+}
+
+function syncBookmarkFormType() {
+  const isLinkFolder = els.bookmarkForm.elements.type.value === "linkFolder";
+  els.bookmarkUrlLabel.hidden = isLinkFolder;
+  els.bookmarkForm.elements.url.required = !isLinkFolder;
+  if (isLinkFolder) els.bookmarkForm.elements.url.value = "";
 }
 
 async function deleteEditingBookmark() {
   if (!editingBookmarkId) return;
+  const bookmark = state.bookmarks.find((item) => item.id === editingBookmarkId);
   const ok = await askConfirm({
     title: "删除书签",
-    message: "确定删除这个书签吗？",
+    message: bookmark?.type === "linkFolder"
+      ? "确定删除这个网页文件夹吗？其中的网页链接会移出文件夹。"
+      : "确定删除这个书签吗？",
     okText: "删除",
   });
   if (!ok) return;
+  state.bookmarks.forEach((item) => {
+    if (item.folderId === editingBookmarkId) item.folderId = "";
+  });
   state.bookmarks = state.bookmarks.filter((bookmark) => bookmark.id !== editingBookmarkId);
+  expandedBookmarkFolders.delete(editingBookmarkId);
   editingBookmarkId = null;
   closeAndReset(els.bookmarkForm);
   persistAndRender("delete");
 }
 
 function canDropBookmark(source, target) {
-  return source
-    && target
-    && source !== target
-    && source.dataset.bookmarkCategory === target.dataset.bookmarkCategory
+  if (!source || !target || source === target) return false;
+  if (canDropIntoBookmarkFolder(source, target.closest("[data-bookmark-folder-id]"))) return true;
+  return source.dataset.bookmarkCategory === target.dataset.bookmarkCategory
     && source.dataset.bookmarkType === target.dataset.bookmarkType;
+}
+
+function canDropIntoBookmarkFolder(source, folder) {
+  return source
+    && folder
+    && source.dataset.bookmarkType === "web"
+    && source.dataset.bookmarkCategory === folder.dataset.bookmarkCategory
+    && source.dataset.bookmarkId !== folder.dataset.bookmarkFolderId;
+}
+
+function canDropOutOfBookmarkFolder(source, column) {
+  return source
+    && column
+    && source.dataset.bookmarkType === "web"
+    && source.dataset.bookmarkCategory === column.dataset.webColumnCategory
+    && Boolean(source.dataset.parentFolderId);
+}
+
+function handleBookmarkDrop(sourceId, targetId) {
+  const source = state.bookmarks.find((bookmark) => bookmark.id === sourceId);
+  const target = state.bookmarks.find((bookmark) => bookmark.id === targetId);
+  if (!source || !target) return;
+  if (target.type === "linkFolder" && source.type === "web" && source.category === target.category) {
+    moveBookmarkIntoFolder(sourceId, targetId);
+    return;
+  }
+  if (source.type === "web" && target.type === "web" && source.category === target.category && (source.folderId ?? "") !== (target.folderId ?? "")) {
+    source.folderId = target.folderId ?? "";
+  }
+  reorderBookmarks(sourceId, targetId);
+}
+
+function moveBookmarkIntoFolder(sourceId, folderId) {
+  const source = state.bookmarks.find((bookmark) => bookmark.id === sourceId);
+  const folder = state.bookmarks.find((bookmark) => bookmark.id === folderId);
+  if (!source || !folder || source.type !== "web" || folder.type !== "linkFolder" || source.category !== folder.category) return;
+  source.folderId = folder.id;
+  expandedBookmarkFolders.add(folder.id);
+  persistAndRender("modify");
+}
+
+function moveBookmarkOutOfFolder(sourceId) {
+  const source = state.bookmarks.find((bookmark) => bookmark.id === sourceId);
+  if (!source || source.type !== "web" || !source.folderId) return;
+  source.folderId = "";
+  source.order = getNextBookmarkOrder(source.category, source.type);
+  persistAndRender("modify");
+}
+
+function toggleBookmarkFolder(folderId) {
+  if (expandedBookmarkFolders.has(folderId)) {
+    expandedBookmarkFolders.delete(folderId);
+  } else {
+    expandedBookmarkFolders.add(folderId);
+  }
+  renderBookmarks(true);
 }
 
 function reorderBookmarks(sourceId, targetId) {
@@ -648,7 +801,7 @@ function reorderBookmarks(sourceId, targetId) {
   const target = state.bookmarks.find((bookmark) => bookmark.id === targetId);
   if (!source || !target) return;
   const group = state.bookmarks
-    .filter((bookmark) => bookmark.category === source.category && bookmark.type === source.type)
+    .filter((bookmark) => bookmark.category === source.category && bookmark.type === source.type && (bookmark.folderId ?? "") === (source.folderId ?? ""))
     .sort(compareBookmarks);
   const sourceIndex = group.findIndex((bookmark) => bookmark.id === sourceId);
   const targetIndex = group.findIndex((bookmark) => bookmark.id === targetId);
@@ -1873,7 +2026,21 @@ function normalizeLoadedState(data) {
 }
 
 function createDefaultWorkspace() {
-  return hydrateInitialBookmarks(hydrateInitialSchedules(structuredClone(initialData)));
+  return hydrateInitialBookmarks(hydrateInitialSchedules(hydrateInitialProjects(structuredClone(initialData))));
+}
+
+function hydrateInitialProjects(data) {
+  (window.MOMENTUM_PROJECTS ?? []).forEach((project) => {
+    const space = data.spaces.find((item) => item.id === project.spaceId);
+    if (!space) return;
+    space.projects.push({
+      id: project.id,
+      name: project.name,
+      icon: normalizeProjectIcon(project.icon),
+      completed: Boolean(project.completed),
+    });
+  });
+  return data;
 }
 
 function hydrateInitialSchedules(data) {
@@ -1919,6 +2086,9 @@ function normalizeBookmarks(bookmarks) {
     return {
       ...bookmark,
       category,
+      type: ["web", "folder", "linkFolder"].includes(bookmark.type) ? bookmark.type : "web",
+      folderId: bookmark.type === "web" ? bookmark.folderId ?? "" : "",
+      url: bookmark.type === "linkFolder" ? "" : bookmark.url ?? "",
       order: Number.isFinite(bookmark.order) ? bookmark.order : nextOrder,
     };
   });
@@ -1937,6 +2107,7 @@ function getNextBookmarkOrder(category, type) {
 
 function formatBookmarkHref(bookmark) {
   const url = String(bookmark.url ?? "").trim();
+  if (bookmark.type === "linkFolder") return "#";
   if (bookmark.type !== "folder") return url;
   if (url.startsWith("file:///")) return url;
   if (/^[A-Za-z]:[\\/]/.test(url)) return `file:///${url.replaceAll("\\", "/")}`;
@@ -2067,6 +2238,7 @@ function projectIconSvg(value) {
 function bookmarkTypeIconSvg(type) {
   const icons = {
     web: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4.5 12h15M12 4.2c2.1 2.1 3.2 4.7 3.2 7.8s-1.1 5.7-3.2 7.8M12 4.2C9.9 6.3 8.8 8.9 8.8 12s1.1 5.7 3.2 7.8"/></svg>`,
+    linkFolder: projectIconPath("folder"),
     folder: projectIconPath("folder"),
   };
   return `<span class="bookmark-symbol" aria-hidden="true">${icons[type] ?? icons.web}</span>`;

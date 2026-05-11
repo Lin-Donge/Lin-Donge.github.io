@@ -5,7 +5,7 @@
 ## 当前版本
 
 - 使用网页运行，直接打开 `index.html` 即可使用。
-- 数据保存在浏览器 `localStorage` 中，适合作为初始本地版本；公开默认日程放在 `data/schedules.js`，本地私有日程可放在不会提交的 `data/schedules.local.js`，默认书签放在 `data/bookmarks.js` 中。
+- 数据保存在浏览器 `localStorage` 中，适合作为初始本地版本；公开默认项目放在 `data/projects.js`，公开默认日程放在 `data/schedules.js`，本地私有日程可放在不会提交的 `data/schedules.local.js`，默认书签放在 `data/bookmarks.js` 中。
 - 支持专区切换、独立书签库、项目列表、工作状态流转、颜色与图标选择、月历节点展示。
 - 支持导出 JSON，便于未来迁移到云端数据库。
 

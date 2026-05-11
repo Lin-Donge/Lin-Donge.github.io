@@ -237,12 +237,13 @@
         </header>
         <label>
           名称
-          <input name="title" required placeholder="例如：Canvas 课程平台" />
+          <input name="title" required placeholder="填写名称" />
         </label>
         <label>
           类型
           <select name="type">
             <option value="web">网页链接</option>
+            <option value="linkFolder">网页文件夹</option>
             <option value="folder">本地文件夹</option>
           </select>
         </label>
@@ -255,9 +256,9 @@
             <option value="practice">课外实践</option>
           </select>
         </label>
-        <label>
+        <label id="bookmarkUrlLabel">
           链接
-          <input name="url" required placeholder="https://... 或 file:///D:/..." />
+          <input name="url" placeholder="https://... 或 file:///D:/..." />
         </label>
         <menu>
           <button type="button" class="ghost-button" data-close-dialog>取消</button>
@@ -327,6 +328,7 @@
       </form>
     </dialog>
 
+    <script src="./data/projects.js"></script>
     <script src="./data/schedules.js"></script>
     <script src="./data/schedules.local.js" onerror="this.remove()"></script>
     <script src="./data/bookmarks.js"></script>
