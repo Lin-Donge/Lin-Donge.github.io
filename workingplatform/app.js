@@ -2185,7 +2185,7 @@ async function fetchOpenMeteo(config) {
 function renderWeatherLoading(city) {
   els.weatherSymbol.innerHTML = weatherIconSvg("loading");
   els.weatherCity.textContent = city;
-  els.weatherTemp.textContent = "--℃";
+  els.weatherTemp.textContent = "--°C";
   els.weatherDetail.textContent = "正在获取天气";
   els.weatherWidget.classList.remove("error");
 }
@@ -2193,7 +2193,7 @@ function renderWeatherLoading(city) {
 function renderWeather(weather) {
   els.weatherSymbol.innerHTML = weatherIconSvg(weather.icon);
   els.weatherCity.textContent = `${weather.city} · ${weather.text}`;
-  els.weatherTemp.textContent = `${weather.temperature}℃`;
+  els.weatherTemp.textContent = `${weather.temperature}°C`;
   els.weatherDetail.textContent = `湿度 ${weather.humidity}% · 风 ${weather.wind}`;
   els.weatherWidget.classList.remove("error");
 }
@@ -2201,7 +2201,7 @@ function renderWeather(weather) {
 function renderWeatherError(city) {
   els.weatherSymbol.innerHTML = weatherIconSvg("error");
   els.weatherCity.textContent = city;
-  els.weatherTemp.textContent = "--℃";
+  els.weatherTemp.textContent = "--°C";
   els.weatherDetail.textContent = "天气获取失败，点击刷新重试";
   els.weatherWidget.classList.add("error");
 }

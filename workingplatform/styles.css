@@ -17,6 +17,12 @@
     sans-serif;
 }
 
+@font-face {
+  font-family: "Digital-7";
+  src: url("../assets/fonts/Digital-7.ttf") format("truetype");
+  font-display: swap;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -161,6 +167,7 @@ button:active:not(:disabled) {
 .brand h1 {
   font-size: 24px;
   line-height: 1.15;
+  font-weight: 700;
   letter-spacing: 0;
 }
 
@@ -522,6 +529,15 @@ button:active:not(:disabled) {
   display: grid;
   min-width: 0;
   gap: 1px;
+}
+
+#timeNow,
+#weatherTemp {
+  font-family: "Digital-7", "Roboto Mono", Consolas, monospace;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  line-height: 1;
 }
 
 .time-copy span,
