@@ -159,7 +159,8 @@ button:active:not(:disabled) {
 }
 
 .brand h1 {
-  font-size: 20px;
+  font-size: 24px;
+  line-height: 1.15;
   letter-spacing: 0;
 }
 
@@ -418,13 +419,14 @@ button:active:not(:disabled) {
 .clock-face::after {
   content: "";
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
   background: var(--ink);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  z-index: 3;
 }
 
 .clock-tick {
@@ -494,7 +496,9 @@ button:active:not(:disabled) {
   border-radius: 999px;
   background: var(--ink);
   transform-origin: bottom center;
+  translate: -50% 0;
   transition: transform 180ms ease;
+  z-index: 2;
 }
 
 .hour-hand {
@@ -504,6 +508,13 @@ button:active:not(:disabled) {
 .minute-hand {
   height: 14px;
   background: #787774;
+}
+
+.second-hand {
+  width: 1px;
+  height: 15px;
+  background: #5f5e59;
+  transition: transform 80ms linear;
 }
 
 .time-copy,
@@ -886,7 +897,6 @@ button:active:not(:disabled) {
   padding: 0;
   display: grid;
   place-items: center;
-  font-size: 17px;
   display: none;
 }
 
@@ -894,10 +904,20 @@ button:active:not(:disabled) {
   display: grid;
 }
 
+.bookmark-delete svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .bookmark-delete:hover {
-  background: #fbefed;
-  border-color: #ead7d4;
-  color: #c4554d;
+  background: #f1f1ef;
+  border-color: #deddda;
+  color: var(--ink);
 }
 
 #editBookmarkBtn.active {
@@ -1074,6 +1094,7 @@ button:active:not(:disabled) {
 .content-layout.space-mode .calendar-day,
 .content-layout.space-mode .calendar-head {
   min-height: 52px;
+  height: auto;
   gap: 2px;
   padding: 4px;
 }
@@ -1089,6 +1110,7 @@ button:active:not(:disabled) {
   text-align: left;
   min-width: 0;
   width: 100%;
+  overflow: visible;
   cursor: pointer;
   transition:
     background-color 140ms ease,
@@ -1155,6 +1177,7 @@ button:active:not(:disabled) {
   display: grid;
   gap: 2px;
   margin-top: 2px;
+  align-self: start;
 }
 
 .calendar-event {
@@ -1573,6 +1596,19 @@ button:active:not(:disabled) {
 
 #taskForm .form-row > label:first-child {
   flex-basis: 150px;
+}
+
+.time-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+.time-pair span {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
 }
 
 label {

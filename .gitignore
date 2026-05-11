@@ -14,3 +14,7 @@ _site/
 /.idea/
 .liquidrc
 workingplatform/data/*.local.js
+workingplatform/desktop-widget/
+workingplatform/widget.html
+workingplatform/widget.css
+workingplatform/widget.js

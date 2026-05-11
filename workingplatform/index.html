@@ -69,6 +69,7 @@
                 <span class="clock-tick"></span>
                 <span class="clock-hand hour-hand"></span>
                 <span class="clock-hand minute-hand"></span>
+                <span class="clock-hand second-hand"></span>
               </span>
               <div class="time-copy">
                 <span id="timeDate">日期</span>
@@ -200,11 +201,19 @@
           </label>
           <label>
             开始时间
-            <input name="startTime" type="time" />
+            <span class="time-pair">
+              <select name="startHour" aria-label="开始小时"></select>
+              <span>:</span>
+              <select name="startMinute" aria-label="开始分钟"></select>
+            </span>
           </label>
           <label>
             结束时间
-            <input name="endTime" type="time" />
+            <span class="time-pair">
+              <select name="endHour" aria-label="结束小时"></select>
+              <span>:</span>
+              <select name="endMinute" aria-label="结束分钟"></select>
+            </span>
           </label>
         </div>
         <label>
@@ -252,6 +261,7 @@
         </label>
         <menu>
           <button type="button" class="ghost-button" data-close-dialog>取消</button>
+          <button type="button" class="danger-button" id="deleteBookmarkBtn" hidden>删除</button>
           <button class="primary-button" type="submit">保存</button>
         </menu>
       </form>
@@ -295,10 +305,6 @@
           <span class="note-label">账号</span>
           <p id="userAccountText">未登录</p>
         </section>
-        <label>
-          邮箱
-          <input id="userEmail" type="email" placeholder="填写邮箱" autocomplete="email" />
-        </label>
         <p class="mail-limit-note">邮箱验证邮件受 Supabase 限制，1 小时最多发送 2 封。</p>
         <div class="user-actions">
           <button class="ghost-button" id="sendChangePasswordBtn" type="button">发送修改密码邮件</button>

@@ -123,6 +123,7 @@ let calendarYear = new Date().getFullYear();
 let calendarMonth = new Date().getMonth();
 let editingTaskRef = null;
 let editingProjectRef = null;
+let editingBookmarkId = null;
 let bookmarkEditMode = false;
 let dragStarted = false;
 let bookmarkDragStarted = false;
@@ -156,6 +157,7 @@ const els = {
   timeWeek: document.querySelector("#timeWeek"),
   hourHand: document.querySelector(".hour-hand"),
   minuteHand: document.querySelector(".minute-hand"),
+  secondHand: document.querySelector(".second-hand"),
   weatherWidget: document.querySelector("#weatherWidget"),
   weatherSymbol: document.querySelector(".weather-symbol"),
   weatherCity: document.querySelector("#weatherCity"),
@@ -202,7 +204,6 @@ const els = {
   bookmarkForm: document.querySelector("#bookmarkForm"),
   projectForm: document.querySelector("#projectForm"),
   userForm: document.querySelector("#userForm"),
-  userEmail: document.querySelector("#userEmail"),
   userAccountText: document.querySelector("#userAccountText"),
   userExportBtn: document.querySelector("#userExportBtn"),
   sendChangePasswordBtn: document.querySelector("#sendChangePasswordBtn"),
@@ -217,6 +218,7 @@ const els = {
   editProjectBtn: document.querySelector("#editProjectBtn"),
   deleteTaskBtn: document.querySelector("#deleteTaskBtn"),
   deleteProjectBtn: document.querySelector("#deleteProjectBtn"),
+  deleteBookmarkBtn: document.querySelector("#deleteBookmarkBtn"),
   toggleProjectCompleteBtn: document.querySelector("#toggleProjectCompleteBtn"),
   editBookmarkBtn: document.querySelector("#editBookmarkBtn"),
 };
@@ -224,10 +226,11 @@ const els = {
 document.querySelector("#newTaskBtn").addEventListener("click", () => {
   editingTaskRef = null;
   els.taskForm.reset();
+  applyDefaultTaskTimeFields();
   if (syncTaskFormContext()) els.taskDialog.showModal();
 });
 
-document.querySelector("#addBookmarkBtn").addEventListener("click", () => els.bookmarkDialog.showModal());
+document.querySelector("#addBookmarkBtn").addEventListener("click", openNewBookmarkDialog);
 els.editBookmarkBtn.addEventListener("click", () => {
   bookmarkEditMode = !bookmarkEditMode;
   renderBookmarks(state.activeSpaceId === BOOKMARKS_ID);
@@ -277,6 +280,7 @@ document.addEventListener("pointerdown", (event) => {
 
 els.deleteTaskBtn.addEventListener("click", deleteEditingTask);
 els.deleteProjectBtn.addEventListener("click", deleteEditingProject);
+els.deleteBookmarkBtn.addEventListener("click", deleteEditingBookmark);
 els.toggleProjectCompleteBtn.addEventListener("click", toggleEditingProjectComplete);
 els.confirmCancelBtn.addEventListener("click", () => closeConfirm(false));
 els.confirmOkBtn.addEventListener("click", () => closeConfirm(true));
@@ -323,11 +327,34 @@ els.taskForm.addEventListener("submit", (event) => {
   persistAndRender(createdTask ? "add" : "modify");
   if (createdTask) saveCloudWorkspace(false);
 });
+els.taskForm.elements.startHour.addEventListener("change", syncDefaultEndTimeFromStart);
+els.taskForm.elements.startMinute.addEventListener("change", syncDefaultEndTimeFromStart);
+
+function syncDefaultEndTimeFromStart() {
+  const startTime = readTimePair(els.taskForm.elements.startHour, els.taskForm.elements.startMinute);
+  if (!startTime) return;
+  setTimePair("end", addMinutesToTime(startTime, 60));
+}
 
 els.bookmarkForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const form = new FormData(event.currentTarget);
-  state.bookmarks.push({
+  const bookmark = editingBookmarkId
+    ? state.bookmarks.find((item) => item.id === editingBookmarkId)
+    : null;
+
+  if (bookmark) {
+    const previousCategory = bookmark.category;
+    const previousType = bookmark.type;
+    bookmark.title = form.get("title").trim();
+    bookmark.type = form.get("type");
+    bookmark.category = form.get("category");
+    bookmark.url = form.get("url").trim();
+    if (bookmark.category !== previousCategory || bookmark.type !== previousType) {
+      bookmark.order = getNextBookmarkOrder(bookmark.category, bookmark.type);
+    }
+  } else {
+    state.bookmarks.push({
       id: crypto.randomUUID(),
       title: form.get("title").trim(),
       type: form.get("type"),
@@ -335,8 +362,10 @@ els.bookmarkForm.addEventListener("submit", (event) => {
       url: form.get("url").trim(),
       order: getNextBookmarkOrder(form.get("category"), form.get("type")),
     });
+  }
+  editingBookmarkId = null;
   closeAndReset(event.currentTarget);
-  persistAndRender("add");
+  persistAndRender(bookmark ? "modify" : "add");
 });
 
 els.projectForm.addEventListener("submit", (event) => {
@@ -365,6 +394,7 @@ els.projectForm.addEventListener("submit", (event) => {
   if (createdProject) saveCloudWorkspace(false);
 });
 
+initTimeSelectOptions();
 render();
 initCloudSync();
 loadWeather();
@@ -506,7 +536,9 @@ function renderBookmarkColumn(bookmarks, type) {
             ${bookmarkTypeIconSvg(bookmark.type)}
             <strong>${escapeHtml(bookmark.title)}</strong>
           </a>
-          <button class="bookmark-delete" type="button" data-bookmark-id="${escapeAttr(bookmark.id)}" title="删除书签" aria-label="删除 ${escapeAttr(bookmark.title)}">×</button>
+          <button class="bookmark-delete" type="button" data-bookmark-id="${escapeAttr(bookmark.id)}" title="编辑书签" aria-label="编辑 ${escapeAttr(bookmark.title)}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5l4.2-1 9.6-9.6a2.1 2.1 0 0 0-3-3l-9.6 9.6-1.2 4Z"/><path d="M13.8 7.4l2.8 2.8"/></svg>
+          </button>
         </div>
       `,
     )
@@ -546,16 +578,7 @@ function bindBookmarkActions() {
     });
   });
   els.bookmarkGrid.querySelectorAll(".bookmark-delete[data-bookmark-id]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const ok = await askConfirm({
-        title: "删除书签",
-        message: "确定删除这个书签吗？",
-        okText: "删除",
-      });
-      if (!ok) return;
-      state.bookmarks = state.bookmarks.filter((bookmark) => bookmark.id !== button.dataset.bookmarkId);
-      persistAndRender("delete");
-    });
+    button.addEventListener("click", () => openBookmarkEditor(button.dataset.bookmarkId));
   });
   els.bookmarkGrid.querySelectorAll(".bookmark-link").forEach((link) => {
     link.addEventListener("click", async (event) => {
@@ -575,6 +598,41 @@ function bindBookmarkActions() {
       }
     });
   });
+}
+
+function openNewBookmarkDialog() {
+  editingBookmarkId = null;
+  els.bookmarkDialog.querySelector("h3").textContent = "添加书签";
+  els.bookmarkForm.reset();
+  els.deleteBookmarkBtn.hidden = true;
+  els.bookmarkDialog.showModal();
+}
+
+function openBookmarkEditor(bookmarkId) {
+  const bookmark = state.bookmarks.find((item) => item.id === bookmarkId);
+  if (!bookmark) return;
+  editingBookmarkId = bookmarkId;
+  els.bookmarkDialog.querySelector("h3").textContent = "编辑书签";
+  els.bookmarkForm.elements.title.value = bookmark.title;
+  els.bookmarkForm.elements.type.value = bookmark.type;
+  els.bookmarkForm.elements.category.value = bookmark.category;
+  els.bookmarkForm.elements.url.value = bookmark.url;
+  els.deleteBookmarkBtn.hidden = false;
+  els.bookmarkDialog.showModal();
+}
+
+async function deleteEditingBookmark() {
+  if (!editingBookmarkId) return;
+  const ok = await askConfirm({
+    title: "删除书签",
+    message: "确定删除这个书签吗？",
+    okText: "删除",
+  });
+  if (!ok) return;
+  state.bookmarks = state.bookmarks.filter((bookmark) => bookmark.id !== editingBookmarkId);
+  editingBookmarkId = null;
+  closeAndReset(els.bookmarkForm);
+  persistAndRender("delete");
 }
 
 function canDropBookmark(source, target) {
@@ -723,8 +781,8 @@ function openTaskEditor(spaceId, taskId) {
   els.taskForm.elements.title.value = task.title;
   els.taskForm.elements.location.value = task.location ?? "";
   els.taskForm.elements.dueDate.value = getDateKey(task.dueDate);
-  els.taskForm.elements.startTime.value = getStartTime(task);
-  els.taskForm.elements.endTime.value = getEndTime(task);
+  setTimePair("start", getStartTime(task));
+  setTimePair("end", getEndTime(task));
   syncTaskColorOptions();
   selectColor(els.taskColorPalette, els.taskColorInput, task.color);
   els.deleteTaskBtn.hidden = false;
@@ -815,7 +873,6 @@ function renderCalendar(tasks) {
 
 function renderDashboardCalendarEvents(dayTasks) {
   const eventItems = dayTasks
-    .slice(0, 5)
     .map((task) => `
       <span class="calendar-event" style="--task-color: ${escapeAttr(task.color)}" data-space-id="${escapeAttr(task.spaceId)}" data-task-id="${escapeAttr(task.id)}">
         ${spaceIconSvg(task.spaceIcon)}
@@ -823,15 +880,11 @@ function renderDashboardCalendarEvents(dayTasks) {
       </span>
     `)
     .join("");
-  const moreItem = dayTasks.length > 5
-    ? `<span class="calendar-more">+${dayTasks.length - 5}</span>`
-    : "";
-  return `<div class="calendar-events">${eventItems}${moreItem}</div>`;
+  return `<div class="calendar-events">${eventItems}</div>`;
 }
 
 function renderCompactCalendarBars(dayTasks) {
   const bars = dayTasks
-    .slice(0, 3)
     .map((task) => `<span class="calendar-bar" style="--bar-color: ${escapeAttr(task.color)}"></span>`)
     .join("");
   return `<div class="calendar-bars">${bars}</div>`;
@@ -1448,25 +1501,24 @@ async function signUpCloud() {
 }
 
 function openUserCenter() {
-  els.userEmail.value = currentUser?.email ?? els.cloudEmail.value.trim();
   els.userAccountText.textContent = currentUser
     ? `已登录：${currentUser.email}`
-    : "未登录，可填写邮箱发送忘记密码邮件。";
+    : "未登录，可在左侧云端同步区域填写邮箱。";
   els.sendChangePasswordBtn.disabled = !currentUser;
   els.userDialog.showModal();
 }
 
 async function sendAccountPasswordEmail(mode) {
   if (!(await ensureSupabaseClient())) return;
-  const email = mode === "change" ? currentUser?.email : els.userEmail.value.trim();
+  const email = mode === "change" ? currentUser?.email : currentUser?.email ?? els.cloudEmail.value.trim();
   if (!email) {
-    showToast("请先填写邮箱");
-    els.userEmail.focus();
+    showToast("请先在左侧填写邮箱");
+    els.cloudEmail.focus();
     return;
   }
   if (!isValidEmail(email)) {
     showToast("邮箱格式不正确");
-    els.userEmail.focus();
+    els.cloudEmail.focus();
     return;
   }
 
@@ -2165,6 +2217,7 @@ function renderClock() {
   els.timeWeek.textContent = weekNames[now.getDay()];
   els.hourHand.style.transform = `rotate(${((hours % 12) + minutes / 60) * 30}deg)`;
   els.minuteHand.style.transform = `rotate(${(minutes + seconds / 60) * 6}deg)`;
+  els.secondHand.style.transform = `rotate(${seconds * 6}deg)`;
 }
 
 function weatherCodeText(code) {
@@ -2235,10 +2288,69 @@ function getEndTime(task) {
   return task.endTime ?? "";
 }
 
+function initTimeSelectOptions() {
+  const hourOptions = ['<option value="">--</option>'];
+  for (let hour = 0; hour < 24; hour += 1) {
+    const value = String(hour).padStart(2, "0");
+    hourOptions.push(`<option value="${value}">${value}</option>`);
+  }
+  const minuteOptions = ['<option value="">--</option>'];
+  for (let minute = 0; minute < 60; minute += 5) {
+    const value = String(minute).padStart(2, "0");
+    minuteOptions.push(`<option value="${value}">${value}</option>`);
+  }
+  const hourHtml = hourOptions.join("");
+  const minuteHtml = minuteOptions.join("");
+  ["startHour", "endHour"].forEach((name) => {
+    els.taskForm.elements[name].innerHTML = hourHtml;
+  });
+  ["startMinute", "endMinute"].forEach((name) => {
+    els.taskForm.elements[name].innerHTML = minuteHtml;
+  });
+}
+
+function setTimePair(prefix, value) {
+  const [hour = "", minute = ""] = normalizeTimeInput(value).split(":");
+  els.taskForm.elements[`${prefix}Hour`].value = hour;
+  els.taskForm.elements[`${prefix}Minute`].value = minute;
+}
+
+function readTimePair(hourSelect, minuteSelect) {
+  const hour = hourSelect.value;
+  const minute = minuteSelect.value;
+  if (!hour && !minute) return "";
+  if (!hour || !minute) return null;
+  return `${hour}:${minute}`;
+}
+
+function isPartialTimePair(hourSelect, minuteSelect) {
+  return Boolean(hourSelect.value || minuteSelect.value) && !readTimePair(hourSelect, minuteSelect);
+}
+
+function applyDefaultTaskTimeFields() {
+  const startTime = getNearestHourTime(new Date());
+  els.taskForm.elements.dueDate.value = toDateInput(new Date());
+  setTimePair("start", startTime);
+  setTimePair("end", addMinutesToTime(startTime, 60));
+}
+
 function readTaskTimeFields(form) {
-  const date = form.get("dueDate");
-  const startTime = form.get("startTime");
-  const endTime = form.get("endTime");
+  const date = normalizeDateInput(form.get("dueDate"));
+  const startTime = readTimePair(els.taskForm.elements.startHour, els.taskForm.elements.startMinute);
+  const endTime = readTimePair(els.taskForm.elements.endHour, els.taskForm.elements.endMinute);
+
+  if (!date) {
+    alert("请选择有效日期。");
+    return null;
+  }
+
+  if (
+    isPartialTimePair(els.taskForm.elements.startHour, els.taskForm.elements.startMinute)
+    || isPartialTimePair(els.taskForm.elements.endHour, els.taskForm.elements.endMinute)
+  ) {
+    alert("如果设置时间，请同时选择小时和分钟。");
+    return null;
+  }
 
   if ((startTime && !endTime) || (!startTime && endTime)) {
     alert("如果设置小时分钟，请同时填写开始时间和结束时间。");
@@ -2251,6 +2363,44 @@ function readTaskTimeFields(form) {
   }
 
   return { dueDate: date, startTime, endTime };
+}
+
+function normalizeDateInput(value) {
+  const match = String(value ?? "").trim().match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
+  if (!match) return "";
+  const [, yearText, monthText, dayText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return "";
+  return toDateInput(date);
+}
+
+function normalizeTimeInput(value) {
+  const match = String(value ?? "").trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return "";
+  const hours = Number(match[1]);
+  const minutes = Math.round(Number(match[2]) / 5) * 5;
+  if (hours > 23 || minutes > 60) return "";
+  const normalizedHours = minutes === 60 ? hours + 1 : hours;
+  const normalizedMinutes = minutes === 60 ? 0 : minutes;
+  if (normalizedHours > 23) return "23:55";
+  return `${String(normalizedHours).padStart(2, "0")}:${String(normalizedMinutes).padStart(2, "0")}`;
+}
+
+function getNearestHourTime(date) {
+  const rounded = new Date(date);
+  rounded.setMinutes(date.getMinutes() >= 30 ? 60 : 0, 0, 0);
+  return `${String(rounded.getHours()).padStart(2, "0")}:00`;
+}
+
+function addMinutesToTime(value, minutesToAdd) {
+  const [hours, minutes] = value.split(":").map(Number);
+  const totalMinutes = Math.min(hours * 60 + minutes + minutesToAdd, 23 * 60 + 55);
+  const nextHours = Math.floor(totalMinutes / 60);
+  const nextMinutes = totalMinutes % 60;
+  return `${String(nextHours).padStart(2, "0")}:${String(nextMinutes).padStart(2, "0")}`;
 }
 
 function parseDueDate(value) {
