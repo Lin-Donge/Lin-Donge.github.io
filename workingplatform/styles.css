@@ -19,7 +19,7 @@
 
 @font-face {
   font-family: "Digital-7";
-  src: url("../assets/fonts/Digital-7.ttf") format("truetype");
+  src: url("./fonts/Digital-7.ttf") format("truetype");
   font-display: swap;
 }
 
