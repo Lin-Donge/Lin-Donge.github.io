@@ -296,7 +296,7 @@ els.taskForm.addEventListener("submit", (event) => {
     const task = getSpaceById(editingTaskRef.spaceId).tasks.find((item) => item.id === editingTaskRef.taskId);
     if (task) {
       task.title = form.get("title").trim();
-      task.location = form.get("location").trim();
+      task.location = form.get("noteText").trim();
       task.dueDate = timeFields.dueDate;
       task.startTime = timeFields.startTime;
       task.endTime = timeFields.endTime;
@@ -308,7 +308,7 @@ els.taskForm.addEventListener("submit", (event) => {
       id: crypto.randomUUID(),
       projectId: form.get("projectId"),
       title: form.get("title").trim(),
-      location: form.get("location").trim(),
+      location: form.get("noteText").trim(),
       dueDate: timeFields.dueDate,
       startTime: timeFields.startTime,
       endTime: timeFields.endTime,
@@ -932,7 +932,7 @@ function openTaskEditor(spaceId, taskId) {
     <span>${escapeHtml(space.name)} / ${escapeHtml(project?.name ?? "未归档项目")}</span>
   `;
   els.taskForm.elements.title.value = task.title;
-  els.taskForm.elements.location.value = task.location ?? "";
+  els.taskForm.elements.noteText.value = task.location ?? "";
   els.taskForm.elements.dueDate.value = getDateKey(task.dueDate);
   setTimePair("start", getStartTime(task));
   setTimePair("end", getEndTime(task));
